@@ -1,0 +1,40 @@
+pkgname=automake
+pkgver=1.18
+pkgrel=0
+pkgdesc="GNU tool for automatically creating Makefiles"
+url="https://www.gnu.org/software/automake"
+arch="all"
+depends="perl autoconf"
+license="GPL-2.0-or-later"
+subpackages="$pkgname-doc"
+source="https://ftp.gnu.org/gnu/automake/automake-$pkgver.tar.xz"
+
+build() {
+   if [[ $CBUILD = $CHOST ]]; then
+        # Compile natively
+        echo "No additional arguments are required"
+    else
+        # Cross compiling
+        echo "This can not be cross-compiled"
+        exit 1;
+    fi
+
+   CHOST="$CHOST" \
+   ./configure \
+        --build=$CBUILD \
+        --host=$CHOST \
+        --prefix=/usr \
+        CFLAGS=-D_QNX_SOURCE \
+        LDFLAGS="-lm -lregex -lsocket -lgcc_s"
+
+    make
+}
+
+package() {
+    make DESTDIR="$pkgdir/" install
+}
+
+
+sha512sums="
+3488d9188a9e11a3e7f911f429ef49d2d92c5ea42262e3e288e1d4de39217facd5a7b7c7ccac06e6fd78a661985af1fe5638353575ebadffb36fc22553e5f782  automake-1.18.tar.xz
+"
